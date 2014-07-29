@@ -44,7 +44,7 @@ describe "Static pages" do
     # it { should have_content ('Sample App') }
     # it { should have_selector ('h1', text: 'Sample App') }
     # it { should have_title ("#{base_title}") }
-    it { should have_title (full_title('')) }
+    # it { should have_title (full_title('')) }
     # it { should_not have_title ('| Home') }
 
 
