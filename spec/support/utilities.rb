@@ -6,4 +6,5 @@
 #     "#{base_title} | #{page_title}"
 #   end
 # end
+
 include ApplicationHelper

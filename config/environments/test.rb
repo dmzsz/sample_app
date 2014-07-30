@@ -36,4 +36,7 @@ Rails.application.configure do
 
   # Raises error for missing translations
   # config.action_view.raise_on_missing_translations = true
+
+  # bcrypt-ruby 使用耗时因子（cost factor）设定加密过程的耗时，耗时因子的默认值倾向于安全性而不是速度
+  ActiveModel::SecurePassword.min_cost = true
 end
