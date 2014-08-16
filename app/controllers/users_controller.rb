@@ -1,5 +1,6 @@
 class UsersController < ApplicationController
   def show
+    # 查询为id的user
     @user = User.find(params[:id])
   end
   
@@ -10,6 +11,7 @@ class UsersController < ApplicationController
   def create
     @user = User.new(user_params)
     if @user.save
+      sign_in @user
       flash[:success] = "Welcome to the Sample App!"
       redirect_to @user
     else
@@ -19,9 +21,9 @@ class UsersController < ApplicationController
 	
   private
 	
-  def user_params
-    #传入整个 params Hash，程序会抛出异常
-    params.require(:user).permit(:name, :email, :password,
-    	:password_confirmation)
-  end
+    def user_params
+      #传入整个 params Hash，程序会抛出异常
+      params.require(:user).permit(:name, :email, :password,
+      	:password_confirmation)
+    end
 end
