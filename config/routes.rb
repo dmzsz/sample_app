@@ -14,12 +14,21 @@ Rails.application.routes.draw do
   match '/contact', to: 'static_pages#contact', via: 'get'
 
   resources :users
+  # match '/users',  to: 'usres#create',  via:'post'#创建新用户，具名路由users_path
+  # match '/users',  to: 'usres#index',  via:'get'#所有用户的页面 ，具名路由users_path
+  # match '/user',  to: 'usres#new',  via:'get'#注册新用户的页面，具名路由new_user_path
+  #url指的其实是地址栏中的表现，用的时候要修改的
+  # match '/user/:id',  to: 'usres#show',  via:'get'#显示用户主页，具名路由user_path(user)或render @user
+  # match '/users/:id',  to: 'usres#update',  via:'patch'#更新用户，具名路由user_path(user)
+  # match '/users/:id',  to: 'usres#destroy',  via:'delete'#删除用户，具名路由user_path(user)
+  # match '/user/:id/edit',  to: 'usres#edit,  via:'get'#编辑用户页面，具名路由edit_user_path(user)
 
   resources :sessions, only: [:new, :create, :destroy]
-
+  # match '/sessions',to: 'sessions#create',  via:'post'
   match '/signup',  to: 'users#new',  via: 'get' 
   match '/signin',  to: 'sessions#new', via: 'get'
   match '/signout', to: 'sessions#destroy', via: 'delete'
+
   
   # The priority is based upon order of creation: first created -> highest priority.
   # See how all your routes lay out with "rake routes".

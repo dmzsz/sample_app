@@ -15,8 +15,10 @@ describe User do
   it { should respond_to(:password_confirmation) }
   it { should respond_to(:remember_token) }
   it { should respond_to(:authenticate) }
+  it { should respond_to(:admin) }
 
   it { should be_valid }
+  it { should_not be_admin }
 
   describe "when name is not present" do
     before { @user.name = " " }
@@ -118,5 +120,14 @@ describe User do
     #  its 方法，它和 it 很像，不过测试对象是参数中指定的属性而不是整个测试的对象
     # 等价于it { expect(@user.remember_token).not_to be_blank }
     its(:remember_token) { should_not be_blank }
+  end
+  # 测试 admin 属性
+  describe "with admin attribute set to 'true'" do
+    before do
+      @user.save!
+      @user.toggle!(:admin)
+    end
+
+    it { should be_admin }
   end
 end

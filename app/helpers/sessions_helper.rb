@@ -32,7 +32,21 @@ module SessionsHelper
     @current_user ||= User.find_by(remember_token: remember_token)
   end
 
- def signed_in?
+  def current_user?(user)
+    user == current_user
+  end
+
+  def signed_in?
     !current_user.nil?#current是上面刚刚定义的方法，链式调用java
+  end
+
+  def redirect_back_or(default)
+    redirect_to(session[:return_to] || default)
+    session.delete(:return_to)
+  end
+
+  #记住非法访问的地址
+  def store_location
+    session[:return_to] = request.fullpath if request.get?
   end
 end
