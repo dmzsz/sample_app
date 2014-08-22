@@ -11,6 +11,7 @@ class UsersController < ApplicationController
 	def show
 		# 查询为id的user
 		@user = User.find(params[:id])
+		@microposts = @user.microposts.paginate(page: params[:page])
 	end
 	
 	def new
@@ -57,14 +58,7 @@ class UsersController < ApplicationController
 		end
 
 		# Before filters
-		def signed_in_user
-			unless signed_in?
-				store_location #记录非法访问的页面，登陆后自动跳转到这个页面
-				flash[:warning] = "Please sign in."
-				redirect_to signin_url
-			end
-			# redirect_to signin_url,notice:"Please sign in." unless signed_in?
-		end
+	
 		#检测当前登陆的id与访问的id是否一直，不一致的话跳转到root_path
 		def correct_user
 			begin

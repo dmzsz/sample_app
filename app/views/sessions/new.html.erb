@@ -1,19 +1,19 @@
 <%provide(:title, "Sign in")%>
 <h1>Sign in</h1>
 <div class="row">
-  <div class="col-md-6  col-md-offset-3">
-    <%= form_for(:session, url: sessions_path) do |f| %>
-    <%# form_for(:session, url: sessions_new_path) do |f| %> <!--在路由中设置match '/session_new',to: 'sessions#create',  via:'post'。还可以写成url:'/sessions_new'有没有uri中有没有/都一样-->
+	<div class="col-md-6  col-md-offset-3">
+		<%= form_for(:session, url: sessions_path) do |f| %>
+		<%# form_for(:session, url: sessions_new_path) do |f| %> <!--在路由中设置match '/session_new',to: 'sessions#create',  via:'post'。还可以写成url:'/sessions_new'有没有uri中有没有/都一样-->
 
-      <%= f.label :email %>
-      <%= f.text_field :email %>
+			<%= f.label :email %>
+			<%= f.text_field :email %>
 
-      <%= f.label :password %>
-      <%= f.password_field :password %>
+			<%= f.label :password %>
+			<%= f.password_field :password %>
 
-      <%= f.submit "Sign in", class: "btn btn-large btn-primary" %>
-    <% end %>
+			<%= f.submit "Sign in", class: "btn btn-large btn-primary" %>
+	<% end %>
 
-    <p>New user? <%= link_to "Sign up now!", 'signup'%></p>
-  </div>
+		<p>New user? <%= link_to "Sign up now!", 'signup'%></p>
+	</div>
 </div>

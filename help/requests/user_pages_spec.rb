@@ -62,12 +62,31 @@ describe "User pages" do
 		end
 
 		it { should have_title('All users') }
-    	it { should have_content('All users') }
+			it { should have_content('All users') }
 
 		it "should list each user" do
 			User.all.each do |user|
 				expect(page).to have_selector('li', text: user.name)
 			end
+		end
+	end
+
+	# 检测用户资料页面是否显示了微博的测试
+	describe "profile page" do
+		let(:user) { FactoryGirl.create(:user) }
+		let!(:m1) { FactoryGirl.create(:micropost, user: user, content: "Foo") }
+		let!(:m2) { FactoryGirl.create(:micropost, user: user, content: "Bar") }
+
+		before { visit user_path(user) }
+
+		it { should have_content(user.name) }
+		it { should have_title(user.name) }
+
+		describe "microposts" do
+			it { should have_content(m1.content) }
+			it { should have_content(m2.content) }
+			# count 方法会直接在数据库层中统计用户的微博数量,而不是全部取出后length
+			it { should have_content(user.microposts.count) }
 		end
 	end
 end

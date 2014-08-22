@@ -1,11 +1,23 @@
 <% provide(:title , @user.name ) %>
 <div class="row">
-  <aside class="span4">
-    <section>
-      <h1>
-        	<%= gravatar_for @user %>
-        	<%= @user.name %>
-      </h1>
-    </section>
-  </aside>
+	<aside class="col-md-3">
+		<section>
+			<h1>
+				<%= gravatar_for @user %>
+				<%= @user.name %>
+			</h1>
+		</section>
+	</aside>
+	<div class="col-md-8">
+		<% if @user.microposts.any? %>
+
+			<h3>Microposts (<%= @user.microposts.count %>)</h3>
+			<ol class="microposts">
+				<%= render @microposts %>
+			</ol>
+			<!-- will_paginate 默认程序中存在一个名为 @users 的变量（在 9.3.3 节中介绍过，该变量的值必须是 AvtiveRecord::Relation 的实例） -->
+			<%= will_paginate @microposts %>
+		<% end %>
+	</div>
+ 
 </div>
