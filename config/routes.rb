@@ -22,6 +22,11 @@ Rails.application.routes.draw do
   # match '/users/:id',  to: 'usres#update',  via:'patch'#更新用户，具名路由user_path(user)
   # match '/users/:id',  to: 'usres#destroy',  via:'delete'#删除用户，具名路由user_path(user)
   # match '/user/:id/edit',  to: 'usres#edit,  via:'get'#编辑用户页面，具名路由edit_user_path(user)
+  resources :users do
+    member do
+      get :following, :followers
+    end
+  end
 
   resources :sessions, only: [:new, :create, :destroy]
   # match '/sessions',to: 'sessions#create',  via:'post'
@@ -30,6 +35,8 @@ Rails.application.routes.draw do
   match '/signout', to: 'sessions#destroy', via: 'delete'
 
   resources :microposts, only: [:index,:create, :destroy]
+
+  resources :relationships, only: [:create, :destroy]
   # The priority is based upon order of creation: first created -> highest priority.
   # See how all your routes lay out with "rake routes".
 

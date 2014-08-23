@@ -18,6 +18,11 @@ describe User do
 	it { should respond_to(:admin) }
 	it { should respond_to(:microposts) }
 	it { should respond_to(:feed) }
+	it { should respond_to(:relationships) }
+	it { should respond_to(:followed_users) } 
+	it { should respond_to(:reverse_relationships) }
+	it { should respond_to(:following?) }
+	it { should respond_to(:follow!) }
 
 	it { should be_valid }
 	it { should_not be_admin }
@@ -83,27 +88,26 @@ describe User do
 		it { should_not be_valid }
 	end
 	describe "when password doesn't match confirmation" do
-			before { @user.password_confirmation = "mismatch" }
-			it { should_not be_valid}
+		before { @user.password_confirmation = "mismatch" }
+		it { should_not be_valid}
 	end
 	
-		# 用户身份验证
+	# 用户身份验证
 	describe "with a password that's too short" do
-			before { @user.password = @user.password_confirmation="a" * 5 }
-			it { should be_invalid }
+		before { @user.password = @user.password_confirmation="a" * 5 }
+		it { should be_invalid }
 	end
 	describe "return value of authenticate method" do
 		before { @user.save }
 		let(:found_user) { User.find_by(email: @user.email) }
-
-			describe "with valid password" do
-				it { should eq found_user.authenticate(@user.password) }
-			end
-			describe "with invalid password" do
-					let(:user_for_invalid_password) { found_user.authenticate("invalid") }
-					it { should_not eq user_for_invalid_password }
-					specify { expect(user_for_invalid_password).to be_false }
-			end 
+		describe "with valid password" do
+			it { should eq found_user.authenticate(@user.password) }
+		end
+		describe "with invalid password" do
+				let(:user_for_invalid_password) { found_user.authenticate("invalid") }
+				it { should_not eq user_for_invalid_password }
+				specify { expect(user_for_invalid_password).to be_false }
+		end 
 	end
 
 	# Email 变小写的测试
@@ -162,9 +166,51 @@ describe User do
 			let(:unfollowed_post) do
 				FactoryGirl.create(:micropost, user: FactoryGirl.create(:user))
 			end
+			let(:followed_user) { FactoryGirl.create(:user) }
+			before do
+				@user.follow!(followed_user)
+				3.times { followed_user.microposts.create!(content: "Lorem ipsum") }
+			end
 			its(:feed) { should include(newer_micropost) }
 			its(:feed) { should include(older_micropost) }
 			its(:feed) { should_not include(unfollowed_post) }
+			its(:feed) do
+				followed_user.microposts.each do |micropost|
+					should include(micropost)
+				end
+			end
+
+			it{expect(@user.following?(followed_user)).to be_true}
+			it" cotent内容的微博是否添加成功" do
+				followed_user.microposts.each do |micropost|
+					# puts expect(micropost.content).to eq "Lorem ipsum"
+				end
+			end
 		end
 	end
+
+	# 测试关注关系用到的方法
+	describe "following" do
+		let(:other_user) { FactoryGirl.create(:user) }
+		before do
+			@user.save
+			@user.follow!(other_user)
+		end
+		it { should be_following(other_user) }
+		its(:followed_users) { should include(other_user) }
+		# 测试取消关注用户
+		describe "and unfollowing" do
+			before { @user.unfollow!(other_user) }
+			it { should_not be_following(other_user) }
+			its(:followed_users) { should_not include(other_user) }
+		end
+		# 测试对调后的关注关系
+		it { should be_following(other_user) }
+		its(:followed_users) { should include(other_user) }
+		describe "followed user" do
+			subject { other_user }
+			its(:followers) { should include(@user) }
+		end
+	end
+
 end

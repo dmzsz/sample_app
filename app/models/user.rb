@@ -1,5 +1,22 @@
 class User < ActiveRecord::Base
 	has_many :microposts,dependent: :destroy#依赖关系删除用户时删除微博
+	# 手动指定外键的名字。默认会是relationship_id
+	has_many :relationships,foreign_key: "follower_id",dependent: :destroy
+	 # 创建属性:followeds,通过user.followeds获取到,relationships表中的followed_id数组
+	 # has_many :followeds, through: :relationships
+	 #创建属性:followed_users,通过user.followed_users获取到,relationships表中的followed_id数组
+	 #source指定需要获取的是followed_id列
+	has_many :followed_users, through: :relationships, source: :followed
+	has_many :followers, through: :relationships, source: :follower
+	# 虚拟reverse_relationships表
+	has_many :reverse_relationships, foreign_key: "followed_id",
+					 class_name:  "Relationship",
+					 dependent:   :destroy
+	has_many :followers, through: :reverse_relationships
+	# source默认为 followers的单数
+	# has_many :followers, through: :reverse_relationships, source: :follower#完整写法
+
+
 	validates :name, presence: true, 
 		length: { maximum: 50, minimum:4 }
 	validates :email, presence: true
@@ -30,11 +47,23 @@ class User < ActiveRecord::Base
 	end
 
 	# 动态列表的初步实现
- 	def feed
+	def feed
 		# This is preliminary. See "Following users" for the full implementation.
-		Micropost.where("user_id = ?", id)
+		# Micropost.where("user_id = ?", id) # == microposts
+		Micropost.from_users_followed_by(self)
 	end
-
+	# 是否被关注
+	def following?(other_user)
+		relationships.find_by(followed_id: other_user.id)
+	end
+	# 添加关注
+	def follow!(other_user)
+		relationships.create!(followed_id: other_user.id)
+	end
+	# 取消关注
+ 	def unfollow!(other_user)
+		relationships.find_by(followed_id: other_user.id).destroy
+	end
 	private
 
 		def create_remember_token

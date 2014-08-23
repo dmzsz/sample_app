@@ -12,21 +12,17 @@ describe "Authentication" do
 
 	describe "signin" do
 		before { visit signin_path }
-
 		describe "with invalid information" do
 			before { click_button "Sign in" }
-
 			it { should have_title('Sign in') }
 			it { should have_selector('div.alert.alert-danger') }
 			it {should have_danger_message :Invalid}
-
 			describe "after visiting another page" do
 				before { click_link "Home" }
 				it { should_not have_selector('div.alert.alert-danger') }
 				it { should_not have_danger_message :Invalid}
 			end
 		end
-
 		describe "with valid information" do
 			let(:user) { FactoryGirl.create(:user) }
 			before do
@@ -54,12 +50,11 @@ describe "Authentication" do
 			it { should_not have_link('Sign in', href: signin_path) }
 		end
 	end
-	#权限测试
+
 	describe "authorization" do
 		#没有登陆的用户测试
 		describe "for non-signed-in users" do
 			let(:user) { FactoryGirl.create(:user) }
-			
 			# 测试 edit 和 update 动作是否处于被保护状态
 			describe "in the Users controller" do
 				describe "visiting the edit page" do
@@ -116,6 +111,26 @@ describe "Authentication" do
 					specify { expect(response).to redirect_to(signin_path) }
 				end
 			end
+			# 测试关注列表和粉丝列表页面的访问权限设置
+			describe "visiting the following page" do
+				before { visit following_user_path(user) }
+				it { should have_title('Sign in') }
+				describe "visiting the followers page" do
+					before { visit followers_user_path(user) }
+					it { should have_title('Sign in') }
+				end
+			end
+			# 测试 Relationships 控制器的访问限制
+			describe "in the Relationships controller" do
+				describe "submitting to the create action" do
+					before { post relationships_path }
+					specify { expect(response).to redirect_to(signin_path) }
+				end
+				describe "submitting to the destroy action" do
+					before { delete relationship_path(1) }
+					specify { expect(response).to redirect_to(signin_path) }
+				end
+			end
 		end
 
 		# 测试只有自己才能访问 edit 和 update 动作
@@ -123,7 +138,7 @@ describe "Authentication" do
 			let(:user) { FactoryGirl.create(:user) }
 			let(:wrong_user) { FactoryGirl.create(:user, email: "wrong@example.com") }
 			before { sign_in user, no_capybara: true }#跳过默认的登录操作，直接处理 cookie
-								describe "submitting a GET request to the Users#edit action" do
+			describe "submitting a GET request to the Users#edit action" do
 				before { get edit_user_path(wrong_user) }
 				specify { expect(response.body).not_to match(full_title('Edit user')) }
 				specify { expect(response).to redirect_to(root_url) }
@@ -155,6 +170,5 @@ describe "Authentication" do
 				specify { expect(response).to redirect_to(root_path) }
 			end
 		end
-
 	end
 end
